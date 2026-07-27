@@ -137,7 +137,7 @@ fn add_edit_apply_and_status_route_exact_environments() {
 }
 
 #[test]
-fn update_dry_run_executes_only_read_only_preflight_and_lists_order() {
+fn update_dry_run_executes_only_read_only_preflight_and_applies_before_install() {
     let f = Fixture::new();
     let out = f.run(&["update", "--dry-run"], None);
     assert!(
@@ -155,12 +155,17 @@ fn update_dry_run_executes_only_read_only_preflight_and_lists_order() {
         "\"mise\" \"trust\"",
         "\"hook\" \"before\"",
         "\"mise\" \"-C\"",
+        "\"dotfiles\" \"status\" \"--missing\" \"first\"",
+        "\"dotfiles\" \"status\" \"second\"",
     ] {
         assert!(stdout.contains(needle), "missing {needle}: {stdout}");
     }
-    assert!(stdout.find("\"pull\"").unwrap() < stdout.find("\"after\"").unwrap());
-    assert!(stdout.find("\"after\"").unwrap() < stdout.find("\"trust\"").unwrap());
-    assert!(stdout.find("\"before\"").unwrap() < stdout.find("\"install\"").unwrap());
+    let at = |needle: &str| stdout.find(needle).unwrap();
+    assert!(at("\"pull\"") < at("\"after\""));
+    assert!(at("\"after\"") < at("\"trust\""));
+    assert!(at("\"trust\"") < at("\"apply\""));
+    assert!(at("\"apply\"") < at("\"before\""));
+    assert!(at("\"before\"") < at("\"install\""));
 }
 
 #[test]
@@ -174,6 +179,6 @@ fn update_is_fail_fast_and_names_the_stage() {
     assert!(
         !lines
             .iter()
-            .any(|x| x.contains(" before") || x.contains(" install"))
+            .any(|x| x.contains("|before") || x.contains(" install") || x.contains(" dotfiles "))
     );
 }

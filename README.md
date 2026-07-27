@@ -139,9 +139,11 @@ Generate static completion with `dotflow completion zsh` (or another shell).
 GitHub origin, clean tracked and untracked state, and dependencies before pulling.
 It then performs an exact `git pull --ff-only origin <branch>`, reloads and validates
 configuration, revalidates the selected profile, runs that profile's `after_sync`
-hooks, trusts configs, runs that profile's `before_install` hooks,
-installs each selected mise environment, applies targets, and checks missing then
-normal status. Failures stop immediately. It never commits, pushes, stashes, resets,
+hooks, trusts configs, applies targets and checks missing then normal status, runs
+that profile's `before_install` hooks, and installs each selected mise environment.
+Applying before installing lets a dotfile-distributed mise config define the toolset
+that `install` then resolves, which is what copy distribution otherwise breaks.
+Failures stop immediately. It never commits, pushes, stashes, resets,
 rebases, or deletes files.
 
 `dotflow update --dry-run` performs local validation, makes no network or filesystem

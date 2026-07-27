@@ -56,6 +56,7 @@ pub(crate) fn update(
         run_hooks(&mut r, &p.after_sync, repo, &backend)
     })?;
     stage("trust", || trust(&mut r, repo, &refreshed, &selected))?;
+    stage("apply", || apply(&mut r, repo, &refreshed, &selected, &[]))?;
     stage("before_install hooks", || {
         run_hooks(&mut r, &p.before_install, repo, &backend)
     })?;
@@ -65,7 +66,6 @@ pub(crate) fn update(
         }
         Ok(())
     })?;
-    stage("apply", || apply(&mut r, repo, &refreshed, &selected, &[]))?;
     if dry {
         for i in &r.intended {
             println!("{}", display_invocation(i));
