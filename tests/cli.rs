@@ -113,12 +113,27 @@ fn add_edit_apply_and_status_route_exact_environments() {
             .iter()
             .any(|x| x.ends_with("backend -E two dotfiles apply --yes second"))
     );
+    assert!(
+        lines
+            .iter()
+            .any(|x| x.ends_with("backend -E one dotfiles status --missing first"))
+    );
+    assert!(
+        lines
+            .iter()
+            .any(|x| x.ends_with("backend -E two dotfiles status second"))
+    );
     let normal = f.run(&["status"], Some("--missing"));
     assert!(normal.status.success());
     assert!(String::from_utf8_lossy(&normal.stdout).contains("drift output"));
     let check = f.run(&["status", "--check"], Some("--missing"));
     assert_eq!(check.status.code(), Some(1));
     assert!(String::from_utf8_lossy(&check.stderr).contains("drift error"));
+    assert!(
+        !f.lines()
+            .iter()
+            .any(|x| x.ends_with("dotfiles status --missing") || x.ends_with("dotfiles status"))
+    );
 }
 
 #[test]

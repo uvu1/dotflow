@@ -23,6 +23,11 @@ pub fn add_environment(profile: &Profile) -> Environment {
         targets: vec![],
     }
 }
+pub(crate) fn dotfiles_args(action: &[&str], targets: &[String]) -> Vec<String> {
+    let mut a: Vec<String> = action.iter().copied().map(String::from).collect();
+    a.extend(targets.iter().cloned());
+    a
+}
 fn mise_args(repo: &Path, cfg: &Config, env: &Environment, args: &[&str]) -> Vec<OsString> {
     let mut a = vec![
         OsString::from("-C"),

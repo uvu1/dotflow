@@ -83,7 +83,10 @@ targets = ["~/Documents/PowerShell/Microsoft.PowerShell_profile.ps1"]
 Profile names are arbitrary. Auto-selection compares the required `platform` and
 optional `arch` fields and requires exactly one match; use `--profile` to override.
 A profile may contain any number of environment tables. With none, update/apply
-use `[common]` once. `add` without an explicitly supplied `--profile` always uses
+use `[common]` once. Only an environment's `targets` are applied and checked;
+dotfiles that the merged mise config manages but no environment lists are left
+alone. Use `mise -C <mise_dir> -E <env> dotfiles status` for the full merged view.
+`add` without an explicitly supplied `--profile` always uses
 the base mise config; explicit profile add and `edit` use `add_environment`.
 Only the selected profile's hooks run. Only `{repo}`, `{home}`, and `{backend}` are expanded in hook
 arguments, cwd, environment values, and program; strings are passed directly as
@@ -109,9 +112,10 @@ dotflow shell-init <bash|zsh|fish|powershell>
 `add` streams mise output and never stages Git. `edit`, apply/install operations,
 and hooks inherit the terminal, including stdin. `apply` trusts the base config and
 each selected environment config exactly once, applies the selected profile's
-environments, then shows their status. It never pulls or installs. `status` displays
-mise status output; `status --check` returns nonzero for a dirty repository or mise
-drift (`mise dotfiles status --missing`).
+environments, then shows the status of the same targets it applied. It never pulls
+or installs. `status` displays mise status output for each selected environment's
+targets; `status --check` returns nonzero for a dirty repository or mise drift in
+those targets (`mise dotfiles status --missing`).
 
 For parent-shell `cd`, source the generated wrapper, for example:
 

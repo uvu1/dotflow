@@ -1,7 +1,7 @@
 use crate::config::Config;
 use crate::error::{Error, Result};
 use crate::git::git;
-use crate::mise::{mise_status, selected_environments};
+use crate::mise::{dotfiles_args, mise_status, selected_environments};
 use crate::process::Runner;
 use std::io::{self, Write};
 use std::path::Path;
@@ -40,7 +40,9 @@ pub(crate) fn status(repo: &Path, cfg: &Config, profile: &str, check: bool) -> R
     );
     let mut drift = false;
     for e in selected_environments(cfg, profile)? {
-        let out = mise_status(&mut r, repo, cfg, e, &["dotfiles", "status", "--missing"])?;
+        let a = dotfiles_args(&["dotfiles", "status", "--missing"], &e.targets);
+        let refs: Vec<_> = a.iter().map(String::as_str).collect();
+        let out = mise_status(&mut r, repo, cfg, e, &refs)?;
         print_output(&out)?;
         if !out.status.success() {
             drift = true;
