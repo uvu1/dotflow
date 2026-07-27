@@ -142,7 +142,7 @@ dependencies = [
 
 [[package]]
 name = "dotflow"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "clap",
  "clap_complete",
